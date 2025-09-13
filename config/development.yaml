@@ -1,0 +1,182 @@
+# LLM项目开发环境配置文件
+
+# 项目基础信息
+project:
+  name: "LLM从零实现"
+  version: "1.0.0"
+  description: "完整的大语言模型开发与训练平台"
+  author: "BinaryRisker"
+
+# 环境配置
+environment:
+  name: "development"
+  debug: true
+  log_level: "DEBUG"
+  auto_reload: true
+
+# 模型配置
+model:
+  # BERT配置
+  bert:
+    vocab_size: 30000
+    hidden_size: 768
+    num_layers: 12
+    num_attention_heads: 12
+    intermediate_size: 3072
+    max_position_embeddings: 512
+    dropout: 0.1
+    
+  # GPT配置  
+  gpt:
+    vocab_size: 30000
+    hidden_size: 768
+    num_layers: 12
+    num_attention_heads: 12
+    max_position_embeddings: 1024
+    dropout: 0.1
+    
+  # Transformer配置
+  transformer:
+    d_model: 512
+    num_heads: 8
+    num_encoder_layers: 6
+    num_decoder_layers: 6
+    dim_feedforward: 2048
+    dropout: 0.1
+
+# 训练配置
+training:
+  # 设备配置
+  device: "auto"  # auto, cpu, cuda, mps
+  mixed_precision: true
+  gradient_checkpointing: false
+  
+  # 超参数
+  batch_size: 32
+  learning_rate: 0.0001
+  max_epochs: 100
+  warmup_steps: 1000
+  weight_decay: 0.01
+  
+  # 数据加载
+  num_workers: 4
+  pin_memory: true
+  
+  # 保存和检查点
+  save_every_n_epochs: 5
+  checkpoint_dir: "./checkpoints"
+  save_top_k: 3
+
+# 分布式训练配置
+distributed:
+  backend: "nccl"  # nccl, gloo
+  init_method: "env://"
+  world_size: 1
+  rank: 0
+  
+# 数据配置
+data:
+  # 数据集路径
+  datasets_dir: "./data"
+  cache_dir: "./cache"
+  
+  # 预处理配置
+  max_seq_length: 512
+  truncation: true
+  padding: "max_length"
+  
+  # 数据增强
+  augmentation:
+    enabled: false
+    probability: 0.1
+
+# 评估配置
+evaluation:
+  # 指标配置
+  metrics:
+    - "accuracy"
+    - "f1_score" 
+    - "precision"
+    - "recall"
+    - "bleu"
+    - "rouge"
+  
+  # GLUE任务配置
+  glue:
+    tasks:
+      - "CoLA"
+      - "SST-2" 
+      - "MRPC"
+      - "STS-B"
+      - "QQP"
+      - "MNLI"
+      - "QNLI"
+      - "RTE"
+      - "WNLI"
+    batch_size: 64
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "[%(asctime)s] %(levelname)s: %(message)s"
+  file: "./logs/development.log"
+  max_file_size: "10MB"
+  backup_count: 5
+  
+  # 控制台输出
+  console:
+    enabled: true
+    colored: true
+    
+  # 实验跟踪
+  mlflow:
+    enabled: true
+    tracking_uri: "./mlruns"
+    experiment_name: "llm_development"
+
+# Web界面配置
+web:
+  gradio:
+    server_port: 7860
+    server_name: "127.0.0.1"
+    share: false
+    debug: true
+    
+# API配置 (预留)
+api:
+  host: "127.0.0.1"
+  port: 8000
+  debug: true
+  reload: true
+  
+  # 安全配置
+  cors:
+    enabled: true
+    origins: ["http://localhost:3000"]
+    
+# 路径配置
+paths:
+  models: "./models"
+  data: "./data" 
+  logs: "./logs"
+  cache: "./cache"
+  experiments: "./experiments"
+  outputs: "./outputs"
+
+# 开发工具配置
+tools:
+  # 代码质量
+  black: true
+  isort: true
+  flake8: true
+  
+  # 测试
+  pytest:
+    testpaths: ["tests"]
+    python_files: "test_*.py"
+    addopts: "-v --tb=short"
+    
+  # 类型检查
+  mypy: 
+    enabled: false
+    strict: false

@@ -1,0 +1,196 @@
+# LLM项目测试环境配置文件
+
+# 项目基础信息
+project:
+  name: "LLM从零实现"
+  version: "1.0.0"
+  description: "完整的大语言模型开发与训练平台"
+  author: "BinaryRisker"
+
+# 环境配置
+environment:
+  name: "testing"
+  debug: true
+  log_level: "DEBUG"
+  auto_reload: false
+
+# 模型配置 (测试环境使用小型模型)
+model:
+  # BERT配置 (小型，快速测试)
+  bert:
+    vocab_size: 1000
+    hidden_size: 128
+    num_layers: 2
+    num_attention_heads: 2
+    intermediate_size: 256
+    max_position_embeddings: 64
+    dropout: 0.1
+    
+  # GPT配置 (小型，快速测试)
+  gpt:
+    vocab_size: 1000
+    hidden_size: 128
+    num_layers: 2
+    num_attention_heads: 2
+    max_position_embeddings: 64
+    dropout: 0.1
+    
+  # Transformer配置 (小型，快速测试)
+  transformer:
+    d_model: 128
+    num_heads: 2
+    num_encoder_layers: 2
+    num_decoder_layers: 2
+    dim_feedforward: 256
+    dropout: 0.1
+
+# 训练配置 (测试环境快速收敛)
+training:
+  # 设备配置
+  device: "cpu"  # 测试环境使用CPU
+  mixed_precision: false
+  gradient_checkpointing: false
+  
+  # 超参数 (快速测试)
+  batch_size: 2
+  learning_rate: 0.001
+  max_epochs: 2
+  warmup_steps: 10
+  weight_decay: 0.0
+  
+  # 数据加载
+  num_workers: 0  # 测试环境不使用多进程
+  pin_memory: false
+  
+  # 保存和检查点
+  save_every_n_epochs: 1
+  checkpoint_dir: "./test_checkpoints"
+  save_top_k: 1
+
+# 分布式训练配置 (测试环境禁用)
+distributed:
+  backend: "gloo"
+  init_method: "env://"
+  world_size: 1
+  rank: 0
+  
+# 数据配置 (测试环境小数据集)
+data:
+  # 数据集路径
+  datasets_dir: "./test_data"
+  cache_dir: "./test_cache"
+  
+  # 预处理配置
+  max_seq_length: 32  # 短序列，快速测试
+  truncation: true
+  padding: "max_length"
+  
+  # 数据增强 (测试环境禁用)
+  augmentation:
+    enabled: false
+    probability: 0.0
+
+# 评估配置 (基础指标)
+evaluation:
+  # 指标配置
+  metrics:
+    - "accuracy"
+    - "f1_score"
+  
+  # GLUE任务配置 (仅测试部分任务)
+  glue:
+    tasks:
+      - "CoLA"
+      - "SST-2"
+    batch_size: 2
+
+# 日志配置 (测试环境)
+logging:
+  level: "DEBUG"
+  format: "[%(asctime)s] %(levelname)s: %(message)s"
+  file: "./test_logs/testing.log"
+  max_file_size: "1MB"
+  backup_count: 2
+  
+  # 控制台输出
+  console:
+    enabled: true
+    colored: true
+    
+  # 实验跟踪 (测试环境禁用)
+  mlflow:
+    enabled: false
+    tracking_uri: "./test_mlruns"
+    experiment_name: "llm_testing"
+
+# Web界面配置 (测试端口)
+web:
+  gradio:
+    server_port: 7861
+    server_name: "127.0.0.1"
+    share: false
+    debug: true
+    
+# API配置 (测试端口)
+api:
+  host: "127.0.0.1"
+  port: 8001
+  debug: true
+  reload: true
+  
+  # 安全配置 (测试环境宽松)
+  cors:
+    enabled: true
+    origins: ["*"]
+    
+# 路径配置 (测试环境)
+paths:
+  models: "./test_models"
+  data: "./test_data" 
+  logs: "./test_logs"
+  cache: "./test_cache"
+  experiments: "./test_experiments"
+  outputs: "./test_outputs"
+
+# 测试工具配置
+tools:
+  # 测试框架
+  pytest:
+    testpaths: ["tests"]
+    python_files: "test_*.py"
+    addopts: "-v --tb=short --maxfail=1"
+    markers:
+      - "unit: Unit tests"
+      - "integration: Integration tests"
+      - "slow: Slow tests"
+    
+  # 覆盖率测试
+  coverage:
+    enabled: true
+    min_coverage: 80
+    
+# 测试数据配置
+test_data:
+  # 生成测试数据
+  generate:
+    enabled: true
+    num_samples: 100
+    
+  # 固定测试数据
+  fixtures:
+    classification:
+      - text: "This is a positive example"
+        label: 1
+      - text: "This is a negative example"  
+        label: 0
+        
+    token_classification:
+      - text: "John lives in New York"
+        labels: [1, 0, 0, 1, 1]  # B-PER, O, O, B-LOC, I-LOC
+        
+    question_answering:
+      - context: "The quick brown fox jumps over the lazy dog"
+        question: "What color is the fox?"
+        answer: "brown"
+        start: 10
+        end: 15

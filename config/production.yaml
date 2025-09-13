@@ -1,0 +1,210 @@
+# LLM项目生产环境配置文件
+
+# 项目基础信息
+project:
+  name: "LLM从零实现"
+  version: "1.0.0"
+  description: "完整的大语言模型开发与训练平台"
+  author: "BinaryRisker"
+
+# 环境配置
+environment:
+  name: "production"
+  debug: false
+  log_level: "INFO"
+  auto_reload: false
+
+# 模型配置 (生产环境使用更大的模型)
+model:
+  # BERT配置
+  bert:
+    vocab_size: 50000
+    hidden_size: 1024
+    num_layers: 24
+    num_attention_heads: 16
+    intermediate_size: 4096
+    max_position_embeddings: 512
+    dropout: 0.1
+    
+  # GPT配置  
+  gpt:
+    vocab_size: 50000
+    hidden_size: 1024
+    num_layers: 24
+    num_attention_heads: 16
+    max_position_embeddings: 2048
+    dropout: 0.1
+    
+  # Transformer配置
+  transformer:
+    d_model: 1024
+    num_heads: 16
+    num_encoder_layers: 12
+    num_decoder_layers: 12
+    dim_feedforward: 4096
+    dropout: 0.1
+
+# 训练配置 (生产环境优化)
+training:
+  # 设备配置
+  device: "cuda"
+  mixed_precision: true
+  gradient_checkpointing: true
+  
+  # 超参数
+  batch_size: 128
+  learning_rate: 0.0003
+  max_epochs: 200
+  warmup_steps: 2000
+  weight_decay: 0.01
+  
+  # 数据加载
+  num_workers: 8
+  pin_memory: true
+  
+  # 保存和检查点
+  save_every_n_epochs: 10
+  checkpoint_dir: "/data/checkpoints"
+  save_top_k: 5
+
+# 分布式训练配置 (生产环境多GPU)
+distributed:
+  backend: "nccl"
+  init_method: "env://"
+  world_size: 4  # 4个GPU
+  rank: 0
+  
+# 数据配置
+data:
+  # 数据集路径 (生产环境使用网络存储)
+  datasets_dir: "/data/datasets"
+  cache_dir: "/tmp/cache"
+  
+  # 预处理配置
+  max_seq_length: 1024  # 生产环境支持更长序列
+  truncation: true
+  padding: "max_length"
+  
+  # 数据增强
+  augmentation:
+    enabled: true
+    probability: 0.2
+
+# 评估配置
+evaluation:
+  # 指标配置
+  metrics:
+    - "accuracy"
+    - "f1_score" 
+    - "precision"
+    - "recall"
+    - "bleu"
+    - "rouge"
+    - "perplexity"
+  
+  # GLUE任务配置
+  glue:
+    tasks:
+      - "CoLA"
+      - "SST-2" 
+      - "MRPC"
+      - "STS-B"
+      - "QQP"
+      - "MNLI"
+      - "QNLI"
+      - "RTE"
+      - "WNLI"
+    batch_size: 256
+
+# 日志配置 (生产环境)
+logging:
+  level: "INFO"
+  format: "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)d]: %(message)s"
+  file: "/var/log/llm/production.log"
+  max_file_size: "100MB"
+  backup_count: 10
+  
+  # 控制台输出
+  console:
+    enabled: false  # 生产环境关闭控制台输出
+    colored: false
+    
+  # 实验跟踪
+  mlflow:
+    enabled: true
+    tracking_uri: "http://mlflow-server:5000"
+    experiment_name: "llm_production"
+
+# Web界面配置 (生产环境)
+web:
+  gradio:
+    server_port: 7860
+    server_name: "0.0.0.0"  # 监听所有接口
+    share: false
+    debug: false
+    
+# API配置
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  reload: false
+  workers: 4  # 多进程
+  
+  # 安全配置
+  cors:
+    enabled: true
+    origins: ["https://your-domain.com"]
+    
+  # 限流配置
+  rate_limit:
+    enabled: true
+    requests_per_minute: 100
+    
+# 路径配置 (生产环境)
+paths:
+  models: "/data/models"
+  data: "/data/datasets" 
+  logs: "/var/log/llm"
+  cache: "/tmp/cache"
+  experiments: "/data/experiments"
+  outputs: "/data/outputs"
+
+# 生产环境工具配置
+tools:
+  # 监控
+  prometheus:
+    enabled: true
+    port: 9090
+    
+  # 健康检查
+  health_check:
+    enabled: true
+    interval: 30  # 秒
+    
+# 安全配置
+security:
+  # API密钥
+  api_keys:
+    enabled: true
+    
+  # SSL/TLS
+  ssl:
+    enabled: true
+    cert_file: "/etc/ssl/certs/llm.crt"
+    key_file: "/etc/ssl/private/llm.key"
+    
+# 性能优化
+performance:
+  # 模型编译
+  compile_model: true
+  
+  # 缓存策略
+  model_cache:
+    enabled: true
+    max_size: "10GB"
+    
+  # 批处理优化
+  batch_optimization:
+    enabled: true
+    max_batch_size: 512
