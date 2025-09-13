@@ -1,0 +1,247 @@
+# My LLM Learning Journey - Global Configuration
+# ==============================================
+
+project:
+  name: "My LLM Learning Journey"
+  version: "1.0.0"
+  description: "Complete implementation of language models from MLP to GPT"
+  author: "AI Learner"
+  repository: "https://github.com/BinaryRisker/my_llm"
+
+# Global Training Settings
+training:
+  device: "auto"  # auto, cpu, cuda, cuda:0, etc.
+  mixed_precision: true
+  seed: 42
+  
+  # Default hyperparameters (can be overridden per stage)
+  learning_rate: 1e-4
+  batch_size: 32
+  num_epochs: 20
+  
+  # Optimization
+  optimizer: "adam"
+  weight_decay: 0.01
+  gradient_clip_val: 1.0
+  
+  # Checkpointing
+  checkpoint_dir: "./checkpoints"
+  save_every_n_epochs: 5
+  keep_best_only: true
+  
+  # Early stopping
+  patience: 10
+  min_delta: 1e-4
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "[%(asctime)s] %(levelname)s: %(message)s"
+  save_to_file: true
+  log_dir: "./logs"
+  
+  # Progress bars
+  use_tqdm: true
+  tqdm_format: "{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]"
+
+# Data Configuration
+data:
+  # Default data directories
+  raw_data_dir: "./data/raw"
+  processed_data_dir: "./data/processed"
+  
+  # Text processing
+  max_seq_length: 512
+  vocab_size: 10000
+  min_freq: 2
+  
+  # Data splits
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+
+# Model Configuration per Stage
+stages:
+  stage1_mlp:
+    description: "Multi-Layer Perceptron"
+    model:
+      hidden_sizes: [128, 64, 32]
+      activation: "relu"
+      dropout: 0.1
+    training:
+      learning_rate: 1e-3
+      batch_size: 64
+      num_epochs: 50
+  
+  stage2_rnn_lstm:
+    description: "RNN and LSTM Networks"
+    model:
+      hidden_size: 128
+      num_layers: 2
+      dropout: 0.2
+    training:
+      learning_rate: 1e-3
+      batch_size: 32
+      num_epochs: 30
+  
+  stage3_attention:
+    description: "Attention Mechanism in Seq2Seq"
+    model:
+      encoder_hidden: 256
+      decoder_hidden: 256
+      attention_dim: 128
+    training:
+      learning_rate: 1e-3
+      batch_size: 32
+      num_epochs: 25
+  
+  stage4_transformer:
+    description: "Complete Transformer Architecture"
+    model:
+      d_model: 512
+      nhead: 8
+      num_encoder_layers: 6
+      num_decoder_layers: 6
+      dim_feedforward: 2048
+      dropout: 0.1
+    training:
+      learning_rate: 1e-4
+      batch_size: 32
+      num_epochs: 20
+      warmup_steps: 1000
+  
+  stage5_gpt:
+    description: "GPT Autoregressive Language Model"
+    model:
+      d_model: 512
+      n_heads: 8
+      n_layers: 12
+      max_seq_len: 1024
+      dropout: 0.1
+    training:
+      learning_rate: 3e-4
+      batch_size: 16
+      num_epochs: 20
+      warmup_steps: 2000
+
+# Evaluation Configuration
+evaluation:
+  metrics:
+    - "loss"
+    - "accuracy" 
+    - "perplexity"
+    - "bleu"  # for translation tasks
+  
+  # Generation settings
+  generation:
+    max_new_tokens: 100
+    temperature: 0.8
+    top_k: 50
+    top_p: 0.9
+    num_beams: 5
+    repetition_penalty: 1.1
+
+# Visualization Settings
+visualization:
+  # Plot settings
+  figsize: [12, 8]
+  dpi: 300
+  style: "seaborn-v0_8"
+  
+  # Output directories
+  plots_dir: "./plots"
+  attention_vis_dir: "./plots/attention"
+  
+  # Colors
+  colors:
+    primary: "#1f77b4"
+    secondary: "#ff7f0e"  
+    success: "#2ca02c"
+    warning: "#ff7f0e"
+    error: "#d62728"
+
+# Experiment Tracking (optional)
+experiment_tracking:
+  enabled: false  # Set to true to enable tracking
+  backend: "wandb"  # wandb, mlflow, tensorboard
+  
+  wandb:
+    project: "my-llm-journey"
+    entity: null  # your wandb username
+    tags: ["language-model", "learning", "pytorch"]
+  
+  mlflow:
+    tracking_uri: "./mlruns"
+    experiment_name: "my_llm_experiments"
+
+# Development Settings
+development:
+  # Testing
+  test_mode: false  # Use smaller datasets for quick testing
+  fast_run: false   # Skip extensive evaluation
+  
+  # Debugging
+  debug_mode: false
+  profiling: false
+  
+  # Code quality
+  type_checking: true
+  linting: true
+
+# Deployment Settings (future use)
+deployment:
+  model_format: "pytorch"  # pytorch, onnx, tensorrt
+  
+  api:
+    host: "0.0.0.0"
+    port: 8000
+    workers: 4
+  
+  docker:
+    base_image: "pytorch/pytorch:2.0-cuda11.7-cudnn8-devel"
+    requirements_file: "requirements.txt"
+
+# Paths (automatically set based on project structure)
+paths:
+  project_root: "."
+  docs_dir: "./docs"
+  scripts_dir: "./scripts"
+  tests_dir: "./tests"
+  models_dir: "./models"
+  
+  # Stage-specific paths
+  stage_dirs:
+    stage1: "./stage1_mlp"
+    stage2: "./stage2_rnn_lstm"
+    stage3: "./stage3_attention_seq2seq"
+    stage4: "./stage4_transformer"
+    stage5: "./stage5_gpt"
+
+# External Resources
+external_resources:
+  # Common datasets
+  datasets:
+    wmt_en_fr: "https://www.statmt.org/wmt14/translation-task.html"
+    openwebtext: "https://skylion007.github.io/OpenWebTextCorpus/"
+    pile: "https://pile.eleuther.ai/"
+  
+  # Pretrained models (if any)
+  pretrained_models:
+    gpt2_small: "https://huggingface.co/gpt2"
+    bert_base: "https://huggingface.co/bert-base-uncased"
+
+# Hardware Requirements
+hardware:
+  # Minimum requirements
+  min_ram_gb: 8
+  min_disk_gb: 10
+  
+  # Recommended for full training
+  recommended_ram_gb: 16
+  recommended_disk_gb: 50
+  recommended_gpu: "RTX 3070 or better"
+  
+  # GPU settings
+  gpu:
+    memory_fraction: 0.9
+    allow_growth: true
